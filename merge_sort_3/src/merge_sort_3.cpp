@@ -1,0 +1,34 @@
+#include "test_runner.h"
+#include <algorithm>
+#include <memory>
+#include <vector>
+
+using namespace std;
+
+template <typename RandomIt>
+void MergeSort(RandomIt range_begin, RandomIt range_end){
+	if ((range_end - range_begin) < 2) {
+		return;
+	}
+	vector<typename RandomIt::value_type> elements(make_move_iterator(range_begin), make_move_iterator(range_end));
+	auto mid1 = elements.begin() + (range_end - range_begin)/3;
+    auto mid2 = elements.begin() + (range_end - range_begin)*2/3;
+    MergeSort(elements.begin(), mid1);
+    MergeSort(mid1, mid2);
+    MergeSort(mid2, elements.end());
+	vector<typename RandomIt::value_type> temp;
+	merge(make_move_iterator(elements.begin()), make_move_iterator(mid1), make_move_iterator(mid1), make_move_iterator(mid2), back_inserter(temp));
+	merge(make_move_iterator(temp.begin()), make_move_iterator(temp.end()), make_move_iterator(mid2), make_move_iterator(elements.end()), range_begin);
+}
+
+void TestIntVector() {
+  vector<int> numbers = {6, 1, 3, 9, 1, 9, 8, 12, 1};
+  MergeSort(begin(numbers), end(numbers));
+  ASSERT(is_sorted(begin(numbers), end(numbers)));
+}
+
+int main() {
+  TestRunner tr;
+  RUN_TEST(tr, TestIntVector);
+  return 0;
+}
